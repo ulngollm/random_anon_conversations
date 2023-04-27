@@ -75,21 +75,29 @@ def send_message(client: Client, message: Message):
     if not has_open_conversation:
         message.reply(
             'У вас сейчас нет собеседника',
-            reply_markup=InlineKeyboardMarkup([[
-                InlineKeyboardButton(
-                    "Найти",
-                    callback_data="search:%d" % message.from_user.id
-                ),
-                InlineKeyboardButton(
-                    "Подожду, пока мне напишут",
-                    callback_data="wait:%d" % message.from_user.id
-                )
-            ]])
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "Найти",
+                        callback_data="search:%d" % message.from_user.id
+                    )
+                ],
+                [   
+                    InlineKeyboardButton(
+                        "Подожду, пока мне напишут",
+                        callback_data="wait:%d" % message.from_user.id
+                    )
+                ]
+            ])
         )
 
 
 def continue_conversation(client: Client, callback_query: CallbackQuery):
     callback_query.answer('Ок! Можете продолжать переписку.')
+
+
+def wait_invite(client: Client, callback_query: CallbackQuery):
+    callback_query.answer('Ок! Как скажете.')
 
 
 app.add_handler(MessageHandler(start, filters.command(['start'])))
@@ -98,8 +106,8 @@ app.add_handler(MessageHandler(init_search, filters.command(['search'])))
 app.add_handler(MessageHandler(quit_conversation, filters.command(['quit'])))
 app.add_handler(CallbackQueryHandler(close_conversation, filters.regex('quit:(\d*)')))
 app.add_handler(CallbackQueryHandler(continue_conversation, filters.regex('continue:(\d*)')))
-
 app.add_handler(CallbackQueryHandler(search_button, filters.regex('search:(\d*)')))
+app.add_handler(CallbackQueryHandler(wait_invite, filters.regex('wait:(\d*)')))
 app.add_handler(MessageHandler(send_message, filters.text))
 
 
