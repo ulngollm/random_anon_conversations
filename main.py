@@ -49,11 +49,18 @@ def set_status_inactive(client: Client, message: Message):
     )
 
 
-def init_search(client: Client, message: Message, user: None):
+def init_search(client: Client, message: Message, user = None):
     message.reply(
         'Сейчас найдем вам пару для переписки...'
     )
     user = message.from_user if not user else user 
+    user_status = user_manager.find(user.id)[2]
+    if user_status == UserStatus.BUSY:
+        message.reply(
+            'У вас уже есть открытый диалог. Если хотите закрыть его и начать новый, выполните команду /quit.'
+        )
+        return
+
     match = match_manager.search_match(user.id, UserStatus.ACTIVE)
     if match == None:
         message.reply(
@@ -61,6 +68,7 @@ def init_search(client: Client, message: Message, user: None):
         )
         return
     
+    user_manager.set_status(user.id, UserStatus.BUSY)
     client.send_message(
         match, 
         'Мы нашли вам собеседника! Все, что вы напишете после этого сообщения, отправится ему 🔽'
@@ -88,6 +96,7 @@ def quit_conversation(client: Client, message: Message):
 
 def close_conversation(client: Client, callback_query: CallbackQuery):
     match_manager.close_current_conversation(callback_query.from_user.id)
+    user_manager.set_status(callback_query.from_user.id, UserStatus.ACTIVE)
     callback_query.message.reply(
         'Окей, мы отправим уведомление пользователю. Можете найти другого собеседника.'
     )
