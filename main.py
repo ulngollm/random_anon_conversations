@@ -4,7 +4,7 @@ from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram import filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import os
-from db.queries import user as user_manager
+from db.queries import user as user_manager, match as match_manager
 from user import UserStatus
 
 load_dotenv()
@@ -49,11 +49,22 @@ def set_status_inactive(client: Client, message: Message):
     )
 
 
-def init_search(client: Client, message: Message):
+def init_search(client: Client, message: Message, user: None):
     message.reply(
         'Сейчас найдем вам пару для переписки...'
     )
-    # todo search
+    user = message.from_user if not user else user 
+    match = match_manager.search_match(user.id, UserStatus.ACTIVE)
+    if match == None:
+        message.reply(
+            'Мы пока не смогли найти вам собеседника. Они все заняты. Попробуйте позднее.'
+        )
+        return
+    
+    client.send_message(
+        match, 
+        'Мы нашли вам собеседника! Все, что вы напишете после этого сообщения, отправится ему 🔽'
+    )
     message.reply(
         'Мы нашли вам собеседника и уведомили его. Все, что вы напишете после этого сообщения, отправится ему 🔽'
     )
@@ -81,15 +92,15 @@ def close_conversation(client: Client, callback_query: CallbackQuery):
     )
 
 def search_button(client: Client, callback_query: CallbackQuery):
-    init_search(client, callback_query.message)
+    init_search(client, callback_query.message, callback_query.from_user)
 
 
 def send_message(client: Client, message: Message):
-    has_open_conversation = False
+    open_conversation = match_manager.get_active_conversation(message.from_user.id)
     # todo проверить, есть ли открытый диалог
     # todo если есть, перенаправить сообщение собеседнику
     # если нет, то 
-    if not has_open_conversation:
+    if not open_conversation:
         message.reply(
             'У вас сейчас нет собеседника',
             reply_markup=InlineKeyboardMarkup([
@@ -107,7 +118,13 @@ def send_message(client: Client, message: Message):
                 ]
             ])
         )
-
+        return
+    
+    match_id = open_conversation[0] if open_conversation[0] != message.from_user.id else open_conversation[1]
+    client.send_message(
+        match_id,
+        message.text
+    )
 
 def continue_conversation(client: Client, callback_query: CallbackQuery):
     callback_query.answer('Ок! Можете продолжать переписку.')
