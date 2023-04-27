@@ -4,7 +4,8 @@ from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram import filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import os
-
+from db.queries import user as user_manager
+from user import UserStatus
 
 load_dotenv()
 API_ID = os.getenv('API_ID')
@@ -15,18 +16,34 @@ app = Client('bot', API_ID, API_HASH, bot_token=BOT_API_TOKEN)
 
 
 def start(client: Client, message: Message):
+    user = user_manager.find(message.from_user.id)
+    if user == None:
+        user_manager.add(message.from_user.id)
+        message.reply(
+            'Привет! \nЕсли вы хотите найти собеседника прямо сейчас, нажмите кнопку',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    "Найти собеседника",
+                    callback_data="search:%d" % message.from_user.id
+                )
+            ]])
+        )
+        return
+
+    user_manager.set_status(message.from_user.id, UserStatus.ACTIVE)
     message.reply(
-        'Привет! Теперь вас могут найти. \nЕсли вы хотите найти собеседника прямо сейчас, нажмите кнопку',
-        reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                "Найти собеседника",
-                callback_data="search:%d" % message.from_user.id
-            )
-        ]])
-    )
+            'Вы изменили видимость профиля. Теперь вам могут писать. \nЕсли вы хотите найти собеседника прямо сейчас, нажмите кнопку',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    "Найти собеседника",
+                    callback_data="search:%d" % message.from_user.id
+                )
+            ]])
+        )
 
 
 def set_status_inactive(client: Client, message: Message):
+    user_manager.set_status(message.from_user.id, UserStatus.FREEZED)
     message.reply(
         'Вы приостановили переписку. Чтобы снова вернуться в поиск, нажмите команду /start'
     )
