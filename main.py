@@ -87,6 +87,7 @@ def quit_conversation(client: Client, message: Message):
 
 
 def close_conversation(client: Client, callback_query: CallbackQuery):
+    match_manager.close_current_conversation(callback_query.from_user.id)
     callback_query.message.reply(
         'Окей, мы отправим уведомление пользователю. Можете найти другого собеседника.'
     )

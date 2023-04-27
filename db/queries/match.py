@@ -27,7 +27,7 @@ def search_match(user_id: int, allowed_status: int):
     return user[0]
 
 
-def close_current_conversation(user_id: int, status_closed: int = 0, status_active: int = 0):
+def close_current_conversation(user_id: int, status_closed: int = MatchStatus.CLOSED, status_active: int = MatchStatus.ACTIVE):
     conn = sqlite3.connect(DB_NAME)
     conn.cursor().execute(
         'UPDATE matches SET status = ? WHERE user_1_id = ? or user_2_id = ? and status = ?', 
@@ -37,10 +37,10 @@ def close_current_conversation(user_id: int, status_closed: int = 0, status_acti
     conn.close()
 
 
-def get_active_conversation(user_id: int, status_active: int = 0):
+def get_active_conversation(user_id: int, status_active: int = MatchStatus.ACTIVE):
     conn = sqlite3.connect(DB_NAME)
     result = conn.cursor().execute(
-        'SELECT user_1_id, user_2_id from matches WHERE status = ? and user_1_id = ? or user_2_id = ?', 
+        'SELECT user_1_id, user_2_id from matches WHERE status = ? and (user_1_id = ? or user_2_id = ?)', 
         (status_active, user_id, user_id,)
     ).fetchone()
     conn.close()
