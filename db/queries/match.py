@@ -1,10 +1,6 @@
 import sqlite3
 from match import MatchStatus
-
-from dotenv import load_dotenv
-import os
-load_dotenv()
-DB_NAME = os.getenv('DB_NAME')
+from config import DB_NAME
 
 
 # пока только с 1 статусом, разрешающим поиск
