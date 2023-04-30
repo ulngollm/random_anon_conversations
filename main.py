@@ -1,18 +1,23 @@
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram import filters
-import handlers
-from config import app
+from handlers.search import init_search, search_button
+from handlers.start import start
+from handlers.freeze import set_status_inactive
+from handlers.quit import close_conversation
+from handlers.confirm import quit_conversation, continue_conversation, wait_invite
+from handlers.send import send_message
+from app import client
 
 
-app.add_handler(MessageHandler(handlers.start, filters.command(['start'])))
-app.add_handler(MessageHandler(handlers.set_status_inactive, filters.command(['freeze'])))
-app.add_handler(MessageHandler(handlers.init_search, filters.command(['search'])))
-app.add_handler(MessageHandler(handlers.quit_conversation, filters.command(['quit'])))
-app.add_handler(CallbackQueryHandler(handlers.close_conversation, filters.regex('quit:(\d*)')))
-app.add_handler(CallbackQueryHandler(handlers.continue_conversation, filters.regex('continue:(\d*)')))
-app.add_handler(CallbackQueryHandler(handlers.search_button, filters.regex('search:(\d*)')))
-app.add_handler(CallbackQueryHandler(handlers.wait_invite, filters.regex('wait:(\d*)')))
-app.add_handler(MessageHandler(handlers.send_message, filters.text))
+client.add_handler(MessageHandler(start, filters.command(['start'])))
+client.add_handler(MessageHandler(set_status_inactive, filters.command(['freeze'])))
+client.add_handler(MessageHandler(init_search, filters.command(['search'])))
+client.add_handler(MessageHandler(quit_conversation, filters.command(['quit'])))
+client.add_handler(CallbackQueryHandler(close_conversation, filters.regex('quit:(\d*)')))
+client.add_handler(CallbackQueryHandler(continue_conversation, filters.regex('continue:(\d*)')))
+client.add_handler(CallbackQueryHandler(search_button, filters.regex('search:(\d*)')))
+client.add_handler(CallbackQueryHandler(wait_invite, filters.regex('wait:(\d*)')))
+client.add_handler(MessageHandler(send_message, filters.text))
 
 
-app.run()
+client.run()

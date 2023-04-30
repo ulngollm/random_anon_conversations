@@ -1,11 +1,10 @@
 from pyrogram import Client
 from pyrogram.types import Message, CallbackQuery
-from db.queries import match as match_manager
 from model.user import UserStatus
-from config import user_service
+from app import user_service, match_manager
 
 def init_search(client: Client, message: Message, user = None):
-    user_id = message.from_user if not user else user 
+    user_id = message.from_user.id if not user else user.id 
     user = user_service.authenticate(user_id)
 
     if user.status == UserStatus.BUSY:

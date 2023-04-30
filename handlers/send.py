@@ -1,7 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from db.queries import match as match_manager
-from config import user_service
+from app import user_service, match_manager
 from model.user import UserStatus
 
 

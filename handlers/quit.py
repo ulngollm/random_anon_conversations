@@ -1,7 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import  CallbackQuery
-from db.queries import match as match_manager
-from config import user_service
+from app import user_service, match_manager
 
 def close_conversation(client: Client, callback_query: CallbackQuery):
     user = user_service.authenticate(callback_query.from_user.id)

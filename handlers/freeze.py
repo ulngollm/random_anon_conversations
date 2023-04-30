@@ -1,6 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import Message
-from config import user_service
+from app import user_service
 
 
 def set_status_inactive(client: Client, message: Message):

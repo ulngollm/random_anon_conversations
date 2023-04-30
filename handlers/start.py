@@ -1,7 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from model.user import UserStatus
-from config import user_service
+from app import user_service
 
 
 def start(client: Client, message: Message):

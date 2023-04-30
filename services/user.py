@@ -1,10 +1,9 @@
-from config import state
 from model.user import User, UserStatus
-from db.queries import user as user_storage
 
 class UserService:
-    def __init__(self, state: dict) -> None:
+    def __init__(self, state: dict, storage) -> None:
         self.state = state
+        self.storage = storage
 
 
     def set_freeze(self, user_id: int):    
@@ -21,15 +20,15 @@ class UserService:
 
     def _set_status(self, user_id: int, status: int):
         self.state[user_id] = status 
-        user_storage.set_status(user_id, status)
+        self.storage.set_status(user_id, status)
 
 
     def get_status(self, user_id: int) -> int:
-        return self.state[user_id]
+        return self.state.get(user_id, UserStatus.NEW)
 
     
     def find(self, user_id: int) -> User:
-        raw_user = user_storage.find(user_id)
+        raw_user = self.storage.find(user_id)
         return User(raw_user[1], raw_user[2])
 
 
