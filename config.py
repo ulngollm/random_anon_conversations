@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from pyrogram import Client
+from services.user import UserService
 import os
 
 load_dotenv()
@@ -10,3 +11,4 @@ DB_NAME = os.getenv('DB_NAME')
 
 app = Client('bot', API_ID, API_HASH, bot_token=BOT_API_TOKEN)
 state = dict()
+user_service = UserService(state)
