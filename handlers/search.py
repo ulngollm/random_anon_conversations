@@ -25,6 +25,7 @@ def init_search(client: Client, message: Message, user = None):
         return
     
     user_service.set_busy(user.id)
+    user_service.set_busy(match)
     client.send_message(
         match, 
         'Мы нашли вам собеседника! Все, что вы напишете после этого сообщения, отправится ему 🔽'
