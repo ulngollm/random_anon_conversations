@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from pyrogram import Client
 from services.user import UserService
+from services.match import MatchService
 from db.queries.user import UserManager 
 from db.queries.match import MatchManager
 import os
@@ -16,4 +17,5 @@ state = dict()
 
 user_storage = UserManager(DB_NAME)
 match_manager = MatchManager(DB_NAME)
+match_service = MatchService(match_manager)
 user_service = UserService(state, user_storage)

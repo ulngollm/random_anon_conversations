@@ -8,8 +8,8 @@ def start(client: Client, message: Message):
     user = user_service.authenticate(message.from_user.id) 
     
     if user.status == UserStatus.NEW:
-        user_service.set_active(user.id)
-
+        user_service.add(user.id)
+        
         message.reply(
             'Привет! \nЕсли вы хотите найти собеседника прямо сейчас, нажмите кнопку',
             reply_markup=InlineKeyboardMarkup([[

@@ -1,6 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from app import user_service, match_manager
+from app import user_service, match_service
 from model.user import UserStatus
 
 
@@ -27,11 +27,8 @@ def send_message(client: Client, message: Message):
         )
         return
     
-    # todo брать id диалога из кеша. Потому что на каждое сбщ дергать базу - такое себе
-    # todo сделать сервис для работы с диалогами, где эта логика будет инкапсулирована
-    open_conversation = match_manager.get_active_conversation(message.from_user.id)
-    match_id = open_conversation[0] if open_conversation[0] != message.from_user.id else open_conversation[1]
+    match = match_service.get_current_match(user.id)
     client.send_message(
-        match_id,
+        match.match,
         message.text
     )

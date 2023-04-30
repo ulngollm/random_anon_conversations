@@ -27,6 +27,11 @@ class UserService:
         return self.state.get(user_id, UserStatus.NEW)
 
     
+    def add(self, user_id: int):
+        self.storage.add(user_id, UserStatus.ACTIVE)
+        self.state[user_id] = UserStatus.ACTIVE
+
+
     def find(self, user_id: int) -> User:
         raw_user = self.storage.find(user_id)
         return User(raw_user[1], raw_user[2])

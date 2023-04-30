@@ -11,7 +11,7 @@ conn = sqlite3.connect(DB_NAME)
 conn.cursor().execute('''
     CREATE TABLE users
     (   
-        id PRIMARY_KEY INTEGER,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         status INTEGER DEFAULT 0
     )
