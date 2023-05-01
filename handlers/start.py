@@ -6,6 +6,12 @@ from app import user_service
 
 def start(client: Client, message: Message):
     user = user_service.authenticate(message.from_user.id) 
+
+    if user.status == UserStatus.BUSY:
+        message.reply(
+            'У вас есть открытый диалог. Если хотите выйти из текущего диалога, используйте команду /quit'
+        )
+        return
     
     if user.status == UserStatus.NEW:
         user_service.add(user.id)
