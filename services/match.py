@@ -9,7 +9,7 @@ class MatchService:
         self.storage = storage
 
 
-    def get_current_match(self, user_id: int) -> int:
+    def get_current_match(self, user_id: int) -> Match:
         match =  self.cache.get(user_id)
         if match != None:
             return match
@@ -31,10 +31,10 @@ class MatchService:
         self.cache[user_id2] = Match(conv_id, user_id1)
 
 
-    def close_conversation(self, user1_id, user2_id):
-        self.cache.pop(user1_id)
-        conversation = self.cache.pop(user2_id)
-        self.storage.close_current_conversation(conversation.id)
+    def close_conversation(self, match: Match):
+        self.storage.close_current_conversation(match.id)
+        match_1 = self.cache.pop(match.match)
+        conversation = self.cache.pop(match_1.match)
 
 
     def search(self, user_id: int):
